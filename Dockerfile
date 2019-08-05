@@ -59,7 +59,7 @@ RUN pip install . && \
 
 ADD mods/auth.py /opt/conda/lib/python3.6/site-packages/jupyterhub/auth.py
 ADD mods/spawner.py /opt/conda/lib/python3.6/site-packages/jupyterhub/spawner.py
-Add mods/kernel.json /opt/conda/share/jupyter/kernels/ir/kernel.json
+ADD mods/kernel.json /opt/conda/share/jupyter/kernels/ir/kernel.json
 
 RUN pip2 uninstall ipykernel && \
     pip2 install ipykernel && \
