@@ -89,9 +89,9 @@ CMD ["jupyterhub"]
 
 ## Mods for our environment
 # Change auth.py to allow CammelCase
-ADD mods/auth.py /opt/conda/lib/python3.6/site-packages/jupyterhub/auth.py
+ADD mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
 #
-ADD mods/spawner.py /opt/conda/lib/python3.6/site-packages/jupyterhub/spawner.py
+ADD mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
 #
 ADD mods/kernel.json /opt/conda/share/jupyter/kernels/ir/kernel.json
 
