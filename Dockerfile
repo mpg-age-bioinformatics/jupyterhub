@@ -85,7 +85,7 @@ LABEL org.jupyter.service="jupyterhub"
 
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["jupyterhub"]
+CMD ["jupyterhub", "-f /etc/jupyterhub/jupyterhub_config.py"]
 
 ## Mods for our environment
 # Change auth.py to allow CammelCase
@@ -101,7 +101,7 @@ RUN apt-get update && apt-get -yq dist-upgrade \
     ipython \
     python-ipykernel \
     python-ipython \
- 	libpam-sss \
+    libpam-sss \
     libnss-sss \
     libnss3 && \
     apt-get purge && \

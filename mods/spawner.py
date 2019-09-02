@@ -394,6 +394,9 @@ class Spawner(LoggingConfigurable):
         [
             'PATH',
             'PYTHONPATH',
+	    'LD_LIBRARY_PATH',
+	    'CPATH',
+	    'R_LIBS_USER',
             'CONDA_ROOT',
             'CONDA_DEFAULT_ENV',
             'VIRTUAL_ENV',
