@@ -149,7 +149,7 @@ c.JupyterHub.bind_url = 'https://:8000'
 #  Loaded from the JPY_COOKIE_SECRET env variable by default.
 #  
 #  Should be exactly 256 bits (32 bytes).
-#c.JupyterHub.cookie_secret = b''
+c.JupyterHub.cookie_secret = b'a0f0b6ba61be11b13849a3d6b24165949bf8a41a589ad9432b504b43f00033c3'
 
 ## File in which to store the cookie secret.
 #c.JupyterHub.cookie_secret_file = 'jupyterhub_cookie_secret'
@@ -164,6 +164,7 @@ c.JupyterHub.cookie_secret_file = '/etc/jupyterhub/cookie_secret'
 
 ## url for the database. e.g. `sqlite:///jupyterhub.sqlite`
 #c.JupyterHub.db_url = 'sqlite:///jupyterhub.sqlite'
+c.JupyterHub.db_url = 'sqlite:////etc/jupyterhub/data/jupyterhub.sqlite'
 
 ## log all database transactions. This has A LOT of output
 #c.JupyterHub.debug_db = False
@@ -774,7 +775,7 @@ c.Spawner.cmd = ['jupyter-labhub']
 #  
 #  Defaults to an empty set, in which case no user has admin access.
 #c.Authenticator.admin_users = set()
-c.Authenticator.admin_users = set( 'DRosskopp' )
+#c.Authenticator.admin_users = set( 'DRosskopp' )
 
 ## Automatically begin the login process
 #  
