@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   jupyterhub:
-    image: hub.age.mpg.de/jupyterhub:1.0.0-4
+    image: hub.age.mpg.de/jupyter:1.0.0
     restart: always
     volumes:
       - /var/lib/sss/pipes/:/var/lib/sss/pipes/:rw
@@ -10,6 +10,7 @@ services:
       - /beegfs/:/beegfs/
       - /beegfs/common/docker-volumes/jupyterhub/conf/etc/:/etc/jupyterhub:rw
       - /beegfs/common/docker-volumes/jupyterhub/conf/jupyter_notebook_config.py:/etc/jupyter/jupyter_notebook_config.py:ro
+      - /beegfs/common/docker-volumes/jupyterhub/data/:/srv/jupyterhub:rw
     ports:
       - 8000:8000
     command: jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
@@ -24,5 +25,4 @@ services:
 networks:
   Proxy_proxy_network:
     external: true
-
 

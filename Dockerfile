@@ -1,6 +1,6 @@
 # Try to generate seperate layers
-# Use Ubuntu as baseimage
-ARG BASE_CONTAINER=ubuntu:bionic-20190612@sha256:9b1702dcfe32c873a770a32cfd306dd7fc1c4fd134adfb783db68defc8894b3c
+# Use hub.age.mpg.de/rstudio:3.5.3 as baseimage as we want to use the same R version on both interfaces 
+ARG BASE_CONTAINER=hub.age.mpg.de/rstudio:3.5.3
 FROM $BASE_CONTAINER
 LABEL maintainer="Daniel Rosskopp <drosskopp@upcal.de>"
 
@@ -11,12 +11,8 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get -yq dist-upgrade \
  && apt-get install -yq --no-install-recommends \
-    wget \
 	bzip2 \
-	ca-certificates \
-    locales \
-	fonts-liberation \
-	run-one && \
+	fonts-liberation && \
     apt-get purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -83,27 +79,11 @@ EXPOSE 8000
 
 LABEL org.jupyter.service="jupyterhub"
 
-# Configure container startup
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["jupyterhub", "-f /etc/jupyterhub/jupyterhub_config.py"]
-
-## Mods for our environment
-# Change auth.py to allow CammelCase
-ADD mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
-#
-ADD mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
-#
-ADD mods/kernel.json /opt/conda/share/jupyter/kernels/ir/kernel.json
-
 RUN apt-get update && apt-get -yq dist-upgrade \
  && apt-get install -yq --no-install-recommends \
-    python-pip \
     ipython \
     python-ipykernel \
-    python-ipython \
-    libpam-sss \
-    libnss-sss \
-    libnss3 && \
+    python-ipython && \
     apt-get purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -118,7 +98,6 @@ RUN jupyter nbextension install --py jupytext && \
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     build-essential \
     emacs \
-    git \
     inkscape \
     jed \
     libsm6 \
@@ -135,7 +114,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     texlive-latex-extra \
     texlive-xetex \
     tzdata \
-    unzip \
     nano \
     && rm -rf /var/lib/apt/lists/*
 
@@ -147,7 +125,6 @@ RUN apt-get update && \
     unixodbc \
     unixodbc-dev \
     r-cran-rodbc \
-    gfortran \
     gcc && \
     rm -rf /var/lib/apt/lists/*
 
@@ -181,7 +158,8 @@ RUN conda install --quiet --yes \
     conda clean --all -f -y
 
 # Install e1071 R package (dependency of the caret R package)
-RUN conda install --quiet --yes r-e1071
+RUN conda install --quiet --yes r-e1071 && \
+    conda clean --all -f -y
 
 ## Integrate jupiter/docker-stacks/spicy-notebook
 # ffmpeg for matplotlib anim
@@ -241,9 +219,88 @@ RUN cd /tmp && \
 #ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
 RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot"
 
-# Install Tensorflow
+# Install machinelearning from rocker/tensorflow
 RUN conda install --quiet --yes \
     'tensorflow=1.13*' \
     'keras=2.2*' && \
     conda clean --all -f -y
 
+## Install older iRKernel
+# Install R 3.4.3 and some base packages
+RUN conda create -n r-3.4.3 \
+    'r-base=3.4.3' \
+    'r-caret' \
+    'r-crayon' \
+    'r-devtools' \
+    'r-forecast' \
+    'r-hexbin' \
+    'r-htmltools' \
+    'r-htmlwidgets' \
+    'r-irkernel' \
+    'r-nycflights13' \
+    'r-plyr' \
+    'r-randomforest' \
+    'r-rcurl' \
+    'r-reshape2' \
+    'r-rmarkdown' \
+    'r-rodbc' \
+    'r-rsqlite' \
+    'r-shiny' \
+    'r-sparklyr' \
+    'r-tidyverse' \
+    'unixodbc' \
+	'r-e1071' \
+    && \
+    conda clean --all -f -y
+
+# Install R 3.3.2 and some base packages
+RUN conda create -n r-3.3.2 \
+    'r-base=3.3.2' \
+    'r-caret' \
+    'r-crayon' \
+    'r-devtools' \
+    'r-forecast' \
+    'r-hexbin' \
+    'r-htmltools' \
+    'r-htmlwidgets' \
+    'r-irkernel' \
+    'r-nycflights13' \
+    'r-plyr' \
+    'r-randomforest' \
+    'r-rcurl' \
+    'r-reshape2' \
+    'r-rmarkdown' \
+    'r-rodbc' \
+    'r-rsqlite' \
+    'r-shiny' \
+    'r-sparklyr' \
+    'r-tidyverse' \
+    'unixodbc' \
+	'r-e1071' \
+    && \
+    conda clean --all -f -y
+
+RUN /usr/local/bin/Rscript -e "install.packages('IRkernel')"
+RUN ln -s /opt/conda/bin/jupyter /usr/local/bin/
+RUN /usr/local/bin/R -e "IRkernel::installspec(user = FALSE, name = 'ir353', displayname = 'R 3.5.3')"
+RUN conda init bash
+RUN /opt/conda/envs/r-3.4.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir343', displayname = 'R 3.4.3')"
+RUN /opt/conda/envs/r-3.3.2/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir332', displayname = 'R 3.3.2')"
+RUN ln -s /opt/conda/bin/pip /usr/local/bin/pip3
+
+## Mods for our environment
+# Change auth.py to allow CammelCase
+COPY mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
+# Add further Paths
+COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
+# Override kernel files
+COPY mods/kernel.json-3.6.1 /opt/conda/share/jupyter/kernels/ir/kernel.json
+COPY mods/Renviron-3.6.1 /opt/conda/lib/R/etc/Renviron
+COPY mods/kernel.json-3.5.3 /usr/local/share/jupyter/kernels/ir353/kernel.json
+COPY mods/Renviron-3.5.3 /usr/local/lib/R/etc/Renviron
+COPY mods/kernel.json-3.4.3 /usr/local/share/jupyter/kernels/ir343/kernel.json
+COPY mods/kernel.json-3.3.2 /usr/local/share/jupyter/kernels/ir332/kernel.json
+
+# Configure container startup
+ENTRYPOINT ["tini", "-g", "--"]
+CMD ["jupyterhub", "-f /etc/jupyterhub/jupyterhub_config.py"]
