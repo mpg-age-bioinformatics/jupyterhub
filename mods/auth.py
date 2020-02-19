@@ -322,7 +322,7 @@ class Authenticator(LoggingConfigurable):
         The default attempts to lowercase the username and apply `username_map` if it is
         set.
         """
-#	username = username.lower()
+#       username = username.lower()
         username = self.username_map.get(username, username)
         return username
 
@@ -660,6 +660,15 @@ class LocalAuthenticator(Authenticator):
             # This appears to be the Linux non-interactive adduser command:
             return ['adduser', '-q', '--gecos', '""', '--disabled-password']
 
+    uids = Dict(
+        help="""
+        Dictionary of uids to use at user creation time.
+        This helps ensure that users created from the database
+        get the same uid each time they are created
+        in temporary deployments or containers.
+        """
+    ).tag(config=True)
+
     group_whitelist = Set(
         help="""
         Whitelist all users from this UNIX group.
@@ -762,7 +771,13 @@ class LocalAuthenticator(Authenticator):
         Tested to work on FreeBSD and Linux, at least.
         """
         name = user.name
-        cmd = [arg.replace('USERNAME', name) for arg in self.add_user_cmd] + [name]
+        cmd = [arg.replace('USERNAME', name) for arg in self.add_user_cmd]
+        try:
+            uid = self.uids[name]
+            cmd += ['--uid', '%d' % uid]
+        except KeyError:
+            self.log.debug("No UID for user %s" % name)
+        cmd += [name]
         self.log.info("Creating user: %s", ' '.join(map(pipes.quote, cmd)))
         p = Popen(cmd, stdout=PIPE, stderr=STDOUT)
         p.wait()
@@ -966,6 +981,7 @@ class PAMAuthenticator(LocalAuthenticator):
             uid = pwd.getpwnam(username).pw_uid
             username = pwd.getpwuid(uid).pw_name
             username = self.username_map.get(username, username)
+            return username
         else:
             return super().normalize_username(username)
 

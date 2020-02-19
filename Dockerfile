@@ -1,5 +1,5 @@
 # Try to generate seperate layers
-# Use hub.age.mpg.de/rstudio:3.5.3 as baseimage as we want to use the same R version on both interfaces 
+# Use hub.age.mpg.de/rstudio:3.6.1 as baseimage as we want to use the same R version on both interfaces 
 ARG BASE_CONTAINER=hub.age.mpg.de/rstudio:3.6.1
 FROM $BASE_CONTAINER
 LABEL maintainer="Daniel Rosskopp <drosskopp@upcal.de>"
@@ -9,7 +9,7 @@ LABEL maintainer="Daniel Rosskopp <drosskopp@upcal.de>"
 USER root
 
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get -yq dist-upgrade \
+RUN apt-get update \
  && apt-get install -yq --no-install-recommends \
 	bzip2 \
 	fonts-liberation && \
@@ -67,7 +67,8 @@ RUN conda install --quiet --yes \
     'pycurl' \
     'notebook' \
     'jupyterhub' \
-    'jupyterlab' && \
+    'jupyterlab' \
+    'voila' && \
     conda clean --all -f -y && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
@@ -154,6 +155,7 @@ RUN conda install --quiet --yes \
     'r-sparklyr' \
     'r-tidyverse' \
     'unixodbc' \
+    'r-e1071' \
     && \
     conda clean --all -f -y
 
@@ -297,10 +299,11 @@ COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.p
 # Override kernel files
 COPY mods/kernel.json-3.5.1 /opt/conda/share/jupyter/kernels/ir/kernel.json
 COPY mods/Renviron-3.5.1 /opt/conda/lib/R/etc/Renviron
-COPY mods/kernel.json-3.6.1 /usr/local/share/jupyter/kernels/ir353/kernel.json
+COPY mods/kernel.json-3.6.1 /usr/local/share/jupyter/kernels/ir361/kernel.json
 COPY mods/Renviron-3.6.1 /usr/local/lib/R/etc/Renviron
 COPY mods/kernel.json-3.4.3 /usr/local/share/jupyter/kernels/ir343/kernel.json
 COPY mods/kernel.json-3.3.2 /usr/local/share/jupyter/kernels/ir332/kernel.json
+RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]

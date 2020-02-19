@@ -16,6 +16,8 @@ import warnings
 from subprocess import Popen
 from tempfile import mkdtemp
 
+if os.name == 'nt':
+    import psutil
 from async_generator import async_generator
 from async_generator import yield_
 from sqlalchemy import inspect
@@ -86,6 +88,7 @@ class Spawner(LoggingConfigurable):
     _start_pending = False
     _stop_pending = False
     _proxy_pending = False
+    _check_pending = False
     _waiting_for_response = False
     _jupyterhub_version = None
     _spawn_future = None
@@ -121,6 +124,8 @@ class Spawner(LoggingConfigurable):
             return 'spawn'
         elif self._stop_pending:
             return 'stop'
+        elif self._check_pending:
+            return 'check'
         return None
 
     @property
@@ -207,8 +212,6 @@ class Spawner(LoggingConfigurable):
             return self.orm_spawner.name
         return ''
 
-    hub = Any()
-    authenticator = Any()
     internal_ssl = Bool(False)
     internal_trust_bundles = Dict()
     internal_certs_location = Unicode('')
@@ -394,9 +397,9 @@ class Spawner(LoggingConfigurable):
         [
             'PATH',
             'PYTHONPATH',
-	    'LD_LIBRARY_PATH',
-	    'CPATH',
-	    'R_LIBS_USER',
+            'LD_LIBRARY_PATH',
+            'CPATH',
+            'R_LIBS_USER',
             'CONDA_ROOT',
             'CONDA_DEFAULT_ENV',
             'VIRTUAL_ENV',
@@ -627,6 +630,24 @@ class Spawner(LoggingConfigurable):
         the spawner stops.
 
         This can be set independent of any concrete spawner implementation.
+        """
+    ).tag(config=True)
+
+    auth_state_hook = Any(
+        help="""
+        An optional hook function that you can implement to pass `auth_state`
+        to the spawner after it has been initialized but before it starts.
+        The `auth_state` dictionary may be set by the `.authenticate()`
+        method of the authenticator.  This hook enables you to pass some
+        or all of that information to your spawner.
+
+        Example::
+
+            def userdata_hook(spawner, auth_state):
+                spawner.userdata = auth_state["userdata"]
+
+            c.Spawner.auth_state_hook = userdata_hook
+
         """
     ).tag(config=True)
 
@@ -955,6 +976,14 @@ class Spawner(LoggingConfigurable):
                 return self.post_stop_hook(self)
             except Exception:
                 self.log.exception("post_stop_hook failed with exception: %s", self)
+
+    async def run_auth_state_hook(self, auth_state):
+        """Run the auth_state_hook if defined"""
+        if self.auth_state_hook is not None:
+            try:
+                await maybe_future(self.auth_state_hook(self, auth_state))
+            except Exception:
+                self.log.exception("auth_stop_hook failed with exception: %s", self)
 
     @property
     def _progress_url(self):
@@ -1354,7 +1383,8 @@ class LocalProcessSpawner(Spawner):
         home = user.pw_dir
 
         # Create dir for user's certs wherever we're starting
-        out_dir = "{home}/.jupyterhub/jupyterhub-certs".format(home=home)
+        hub_dir = "{home}/.jupyterhub".format(home=home)
+        out_dir = "{hub_dir}/jupyterhub-certs".format(hub_dir=hub_dir)
         shutil.rmtree(out_dir, ignore_errors=True)
         os.makedirs(out_dir, 0o700, exist_ok=True)
 
@@ -1368,7 +1398,7 @@ class LocalProcessSpawner(Spawner):
         ca = os.path.join(out_dir, os.path.basename(paths['cafile']))
 
         # Set cert ownership to user
-        for f in [out_dir, key, cert, ca]:
+        for f in [hub_dir, out_dir, key, cert, ca]:
             shutil.chown(f, user=uid, group=gid)
 
         return {"keyfile": key, "certfile": cert, "cafile": ca}
@@ -1443,9 +1473,11 @@ class LocalProcessSpawner(Spawner):
             self.clear_state()
             return 0
 
-        # send signal 0 to check if PID exists
-        # this doesn't work on Windows, but that's okay because we don't support Windows.
-        alive = await self._signal(0)
+        # We use pustil.pid_exists on windows
+        if os.name == 'nt':
+            alive = psutil.pid_exists(self.pid)
+        else:
+            alive = await self._signal(0)
         if not alive:
             self.clear_state()
             return 0
@@ -1461,11 +1493,10 @@ class LocalProcessSpawner(Spawner):
         """
         try:
             os.kill(self.pid, sig)
+        except ProcessLookupError:
+            return False  # process is gone
         except OSError as e:
-            if e.errno == errno.ESRCH:
-                return False  # process is gone
-            else:
-                raise
+            raise  # Can be EPERM or EINVAL
         return True  # process exists
 
     async def stop(self, now=False):
