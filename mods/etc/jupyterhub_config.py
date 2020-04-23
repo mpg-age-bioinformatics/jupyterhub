@@ -117,6 +117,7 @@ c.JupyterHub.bind_url = 'https://:8000'
 #  
 #  The Hub should be able to resume from database state.
 #c.JupyterHub.cleanup_servers = True
+c.JupyterHub.cleanup_servers = False
 
 ## Maximum number of concurrent users that can be spawning at a time.
 #  

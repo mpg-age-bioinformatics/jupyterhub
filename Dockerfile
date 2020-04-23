@@ -1,6 +1,6 @@
 # Try to generate seperate layers
 # Use hub.age.mpg.de/rstudio:3.6.1 as baseimage as we want to use the same R version on both interfaces 
-ARG BASE_CONTAINER=hub.age.mpg.de/rstudio:3.6.1
+ARG BASE_CONTAINER=hub.age.mpg.de/rstudio:3.6.3-1
 FROM $BASE_CONTAINER
 LABEL maintainer="Daniel Rosskopp <drosskopp@upcal.de>"
 
@@ -255,40 +255,12 @@ RUN conda create -n r-3.4.3 \
     && \
     conda clean --all -f -y
 
-# Install R 3.3.2 and some base packages
-RUN conda create -n r-3.3.2 \
-    'r-base=3.3.2' \
-    'r-caret' \
-    'r-crayon' \
-    'r-devtools' \
-    'r-forecast' \
-    'r-hexbin' \
-    'r-htmltools' \
-    'r-htmlwidgets' \
-    'r-irkernel' \
-    'r-nycflights13' \
-    'r-plyr' \
-    'r-randomforest' \
-    'r-rcurl' \
-    'r-reshape2' \
-    'r-rmarkdown' \
-    'r-rodbc' \
-    'r-rsqlite' \
-    'r-shiny' \
-    'r-sparklyr' \
-    'r-tidyverse' \
-    'unixodbc' \
-	'r-e1071' \
-    && \
-    conda clean --all -f -y
-
 RUN /usr/local/bin/Rscript -e "install.packages('IRkernel', repos='http://cran.us.r-project.org')"
 RUN ln -s /opt/conda/bin/jupyter /usr/local/bin/
-RUN /usr/local/bin/R -e "IRkernel::installspec(user = FALSE, name = 'ir361', displayname = 'R 3.6.1')"
+RUN /usr/local/bin/R -e "IRkernel::installspec(user = FALSE, name = 'ir363', displayname = 'R 3.6.3')"
 RUN conda init bash
 RUN /opt/conda/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir351', displayname = 'R 3.5.1')"
 RUN /opt/conda/envs/r-3.4.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir343', displayname = 'R 3.4.3')"
-RUN /opt/conda/envs/r-3.3.2/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir332', displayname = 'R 3.3.2')"
 RUN ln -s /opt/conda/bin/pip /usr/local/bin/pip3
 
 ## Mods for our environment
@@ -299,10 +271,9 @@ COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.p
 # Override kernel files
 COPY mods/kernel.json-3.5.1 /opt/conda/share/jupyter/kernels/ir/kernel.json
 COPY mods/Renviron-3.5.1 /opt/conda/lib/R/etc/Renviron
-COPY mods/kernel.json-3.6.1 /usr/local/share/jupyter/kernels/ir361/kernel.json
-COPY mods/Renviron-3.6.1 /usr/local/lib/R/etc/Renviron
+COPY mods/kernel.json-3.6.3 /usr/local/share/jupyter/kernels/ir363/kernel.json
+COPY mods/Renviron-3.6.3 /usr/local/lib/R/etc/Renviron
 COPY mods/kernel.json-3.4.3 /usr/local/share/jupyter/kernels/ir343/kernel.json
-COPY mods/kernel.json-3.3.2 /usr/local/share/jupyter/kernels/ir332/kernel.json
 RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
 # Configure container startup

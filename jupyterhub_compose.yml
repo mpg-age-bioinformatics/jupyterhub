@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   jupyterhub:
-    image: hub.age.mpg.de/jupyter:1.0.0
+    image: hub.age.mpg.de/jupyter:1.1.0
     restart: always
     volumes:
       - /var/lib/sss/pipes/:/var/lib/sss/pipes/:rw
