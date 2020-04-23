@@ -472,7 +472,8 @@ c.JupyterHub.ssl_key = '/etc/jupyterhub/ssl/privkey-jupyterhub.pem'
 #  environment variables. Most, including the default, do not. Consult the
 #  documentation for your spawner to verify!
 #c.Spawner.cmd = ['jupyterhub-singleuser']
-c.Spawner.cmd = ['jupyter-labhub']
+#c.Spawner.cmd = ['jupyter-labhub']
+c.Spawner.default_url = "/lab"
 
 ## Maximum number of consecutive failures to allow before shutting down
 #  JupyterHub.
