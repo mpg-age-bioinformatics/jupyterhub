@@ -1,6 +1,6 @@
 # Try to generate seperate layers
 # Use hub.age.mpg.de/rstudio:3.6.1 as baseimage as we want to use the same R version on both interfaces 
-ARG BASE_CONTAINER=hub.age.mpg.de/rstudio:3.6.3-1
+ARG BASE_CONTAINER=mpgagebioinformatics/rstudio-age:3.6.3
 FROM $BASE_CONTAINER
 LABEL maintainer="Daniel Rosskopp <drosskopp@upcal.de>"
 
@@ -173,7 +173,7 @@ RUN apt-get update && \
 RUN conda install --quiet --yes \
     'beautifulsoup4' \
     'conda-forge::blas=*=openblas' \
-    'bokeh' \
+    #'bokeh' \
     'cloudpickle' \
     'cython' \
     'dask' \
@@ -204,7 +204,7 @@ RUN conda install --quiet --yes \
     # Check this URL for most recent compatibilities
     # https://github.com/jupyter-widgets/ipywidgets/tree/master/packages/jupyterlab-manager
     jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && \
-    jupyter labextension install jupyterlab_bokeh --no-build && \
+    #jupyter labextension install jupyterlab_bokeh --no-build && \
     jupyter lab build --dev-build=False && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging
@@ -260,7 +260,9 @@ RUN ln -s /opt/conda/bin/jupyter /usr/local/bin/
 RUN /usr/local/bin/R -e "IRkernel::installspec(user = FALSE, name = 'ir363', displayname = 'R 3.6.3')"
 RUN conda init bash
 RUN /opt/conda/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir351', displayname = 'R 3.5.1')"
+RUN conda init bash
 RUN /opt/conda/envs/r-3.4.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir343', displayname = 'R 3.4.3')"
+RUN conda init bash
 RUN ln -s /opt/conda/bin/pip /usr/local/bin/pip3
 
 ## Mods for our environment
@@ -268,12 +270,29 @@ RUN ln -s /opt/conda/bin/pip /usr/local/bin/pip3
 COPY mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
 # Add further Paths
 COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
+
 # Override kernel files
+
+COPY mods/kernel.json-3.4.3 /usr/local/share/jupyter/kernels/ir343/kernel.json
+# COPY mods/Renviron-3.4.3 /opt/conda/envs/r-3.4.3/lib/R/etc/Renviron
+COPY mods/Rprofile.site /opt/conda/envs/r-3.4.3/lib/R/etc/Rprofile.site
+RUN ln -s /opt/conda/envs/r-3.4.3/bin/R /bin/R-3.4.3
+RUN ln -s /opt/conda/envs/r-3.4.3/bin/Rscript /bin/Rscript-3.4.3
+
 COPY mods/kernel.json-3.5.1 /opt/conda/share/jupyter/kernels/ir/kernel.json
 COPY mods/Renviron-3.5.1 /opt/conda/lib/R/etc/Renviron
+COPY mods/Rprofile.site /opt/conda/lib/R/etc/Rprofile.site
+RUN ln -s /opt/conda/lib/R/bin//R /bin/R-3.5.1
+RUN ln -s /opt/conda/lib/R/bin/Rscript /bin/Rscript-3.5.1
+
 COPY mods/kernel.json-3.6.3 /usr/local/share/jupyter/kernels/ir363/kernel.json
 COPY mods/Renviron-3.6.3 /usr/local/lib/R/etc/Renviron
-COPY mods/kernel.json-3.4.3 /usr/local/share/jupyter/kernels/ir343/kernel.json
+COPY mods/Rprofile.site /usr/local/lib/R/etc/Rprofile.site
+RUN ln -s /usr/local/lib/R/bin//R /bin/R-3.6.3
+RUN ln -s /usr/local/lib/R/bin/Rscript /bin/Rscript-3.6.3
+
+COPY mods/etc/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+
 RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
 # Configure container startup
