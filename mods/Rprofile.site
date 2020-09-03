@@ -8,7 +8,9 @@ if(is.na(Sys.getenv("HTTR_LOCALHOST", unset=NA))) {
   options(httr_oob_default = TRUE)     
 }
 
-R_LIBS_USER=paste0(Sys.getenv("HOME"),"/.jupyterhub/.R/", paste0(R.Version()$major,".",R.Version()$minor),"/R_LIBS_USER")
+R_LIBS_USER=paste0(Sys.getenv("HOME"),"/.jupyterhub/R/", paste0(R.Version()$major,".",R.Version()$minor),"/R_LIBS_USER")
 dir.create(R_LIBS_USER, showWarnings=FALSE, recursive = TRUE, mode = "0777")
+#Sys.sleep(2)
 Sys.setenv( R_LIBS_USER = R_LIBS_USER )
 .libPaths(  R_LIBS_USER )
+#Sys.sleep(2)
