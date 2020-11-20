@@ -36,9 +36,12 @@ RUN conda init bash
 
 COPY mods/kernel.json-4.0.3 /usr/local/share/jupyter/kernels/ir403/kernel.json
 COPY mods/Renviron-4.0.3 /usr/local/lib/R/etc/Renviron
-COPY mods/Rprofile.site /usr/local/lib/R/etc/Rprofile.site
-RUN ln -s /usr/local/lib/R/bin//R /bin/R-4.0.3
-RUN ln -s /usr/local/lib/R/bin/Rscript /bin/Rscript-4.03
+COPY mods/Rprofile.site /opt/conda/envs/r-4.0.3/lib/R/etc/Rprofile.site
+RUN ln -s /usr/local/lib/R/bin/R /bin/R-4.0.3
+RUN ln -s /usr/local/lib/R/bin/Rscript /bin/Rscript-4.0.3
+
+# FIX OLD 3.6.3
+COPY mods/Rprofile.site-3.6.3 /usr/local/lib/R/etc/Rprofile.site
 
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]
