@@ -40,7 +40,7 @@ COPY mods/Rprofile.site /opt/conda/envs/r-4.0.3/lib/R/etc/Rprofile.site
 RUN ln -s /usr/local/lib/R/bin/R /bin/R-4.0.3
 RUN ln -s /usr/local/lib/R/bin/Rscript /bin/Rscript-4.0.3
 
-COPY mods/etc/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+# COPY mods/etc/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]
