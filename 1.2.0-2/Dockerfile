@@ -37,7 +37,7 @@ RUN /opt/conda/envs/r-4.0.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, 
 RUN conda init bash
 
 COPY mods/kernel.json-4.0.3 /usr/local/share/jupyter/kernels/ir403/kernel.json
-#COPY mods/Renviron-4.0.3 /usr/local/lib/R/etc/Renviron
+COPY mods/Renviron-4.0.3 /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron
 COPY mods/Rprofile.site /opt/conda/envs/r-4.0.3/lib/R/etc/Rprofile.site
 RUN ln -s /opt/conda/envs/r-4.0.3/bin/R /bin/R-4.0.3
 RUN ln -s /opt/conda/envs/r-4.0.3/bin/Rscript /bin/Rscript-4.0.3
@@ -45,6 +45,7 @@ RUN ln -s /opt/conda/envs/r-4.0.3/bin/Rscript /bin/Rscript-4.0.3
 # old ones
 
 COPY mods/Rprofile.site /opt/conda/envs/r-3.4.3/lib/R/etc/Rprofile.site
+COPY mods/Renviron-3.4.3 /opt/conda/envs/r-3.4.3/lib/R/etc/Renviron
 COPY mods/Rprofile.site /opt/conda/lib/R/etc/Rprofile.site
 COPY mods/Rprofile.site /usr/local/lib/R/etc/Rprofile.site
 
