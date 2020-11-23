@@ -1,6 +1,6 @@
 # Try to generate seperate layers
 # Use hub.age.mpg.de/rstudio:3.6.1 as baseimage as we want to use the same R version on both interfaces 
-ARG BASE_CONTAINER=mpgagebioinformatics/jupyter-age:2.0.0
+ARG BASE_CONTAINER=kumpelfilzchen/jupyter:1.2.0
 FROM $BASE_CONTAINER
 LABEL maintainer="Daniel Rosskopp <drosskopp@upcal.de>"
 
@@ -39,6 +39,12 @@ COPY mods/Renviron-4.0.3 /usr/local/lib/R/etc/Renviron
 COPY mods/Rprofile.site /opt/conda/envs/r-4.0.3/lib/R/etc/Rprofile.site
 RUN ln -s /usr/local/lib/R/bin/R /bin/R-4.0.3
 RUN ln -s /usr/local/lib/R/bin/Rscript /bin/Rscript-4.0.3
+
+# old ones
+
+COPY mods/Rprofile.site /opt/conda/envs/r-3.4.3/lib/R/etc/Rprofile.site
+COPY mods/Rprofile.site /opt/conda/lib/R/etc/Rprofile.site
+COPY mods/Rprofile.site /usr/local/lib/R/etc/Rprofile.site
 
 # COPY mods/etc/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
