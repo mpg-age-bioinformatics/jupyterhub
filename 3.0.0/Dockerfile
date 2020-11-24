@@ -302,7 +302,7 @@ COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 # RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
 # Configure container startup
-# ENTRYPOINT ["tini", "-g", "--"]
+ENTRYPOINT ["tini", "-g", "--"]
 CMD ["jupyterhub", "-f /etc/jupyterhub/jupyterhub_config.py"]
 
 
