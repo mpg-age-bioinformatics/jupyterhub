@@ -1,27 +1,27 @@
 # README
 
-### Using this image on your local computer:
+### Starting and entering a container on your local computer:
 ```
-docker pull mpgagebioinformatics/jupyter-age:latest
+docker pull mpgagebioinformatics/jupyter-age:3.0.0
 mkdir -p ${HOME}/jupyter-age/jupyter/ ${HOME}/jupyter-age/data/
 docker run -v ${HOME}/jupyter-age/jupyter/:/root/.jupyterhub/ -v ${HOME}/jupyter-age/data/:/srv/jupyterhub/ -p 8081:8081 -it mpgagebioinformatics/jupyter-age:3.0.0 /bin/bash
 ```
 
 Packages will then be kept in `${HOME}/jupyter-age/jupyter/` while data that you work on can be stored in `${HOME}/jupyter-age/data/`.
 
-Starting jupyter lab:
+Starting jupyter lab inside the container:
 ```
 jupyter lab --ip=0.0.0.0 --port=8081 --allow-root
 ```
 A link will then be provided with a token for the address 127.0.0.1.
 
-Using python inside the image:
+Using python inside the container:
 ```
 export PYTHONUSERBASE=${HOME}/.jupyterhub/python/
 python
 ```
 
-Using R inside the image (eg. R 4.0.3):
+Using R inside the container (eg. R 4.0.3):
 ```
 conda activate r-4.0.3
 R
@@ -34,13 +34,13 @@ module purge && unset PYTHONHOME PYTHONUSERBASE PYTHONPATH
 singularity exec /beegfs/common/singularity/jupyter-age.3.0.0.sif /bin/bash
 ```
 
-Using python inside the image:
+Using python inside the container:
 ```
 export PYTHONUSERBASE=${HOME}/.jupyterhub/python/
 python
 ```
 
-Using R inside the image (eg. R 4.0.3):
+Using R inside the container (eg. R 4.0.3):
 ```
 conda activate r-4.0.3
 R
