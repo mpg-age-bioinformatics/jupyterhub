@@ -3,7 +3,7 @@
 ```
 docker pull mpgagebioinformatics/jupyter-age:latest
 mkdir -p ${HOME}/jupyter-age/jupyter/ ${HOME}/jupyter-age/data/
-docker run -v ${HOME}/jupyter-age/jupyter/:/root/.jupyterhub/ -v ${HOME}/jupyter-age/data/:/srv/jupyterhub/ -p 8081:8081 -it mpgagebioinformatics/jupyter-age:1.2.0-2 /bin/bash
+docker run -v ${HOME}/jupyter-age/jupyter/:/root/.jupyterhub/ -v ${HOME}/jupyter-age/data/:/srv/jupyterhub/ -v $(pwd)/mods/Renviron-3.4.3:/opt/conda/envs/r-3.4.3/lib/R/etc/Renviron -p 8081:8081 -it mpgagebioinformatics/jupyter-age:1.2.0-2 /bin/bash
 jupyter lab --ip=0.0.0.0 --port=8081 --allow-root
 ```
 
