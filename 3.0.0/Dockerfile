@@ -378,7 +378,7 @@ COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 # Change auth.py to allow CammelCase
 COPY mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
 # Add further Paths
-# COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
+COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
 
 # RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
