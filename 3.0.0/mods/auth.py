@@ -322,7 +322,7 @@ class Authenticator(LoggingConfigurable):
         The default attempts to lowercase the username and apply `username_map` if it is
         set.
         """
-        username = username.lower()
+        #username = username.lower()
         username = self.username_map.get(username, username)
         return username
 

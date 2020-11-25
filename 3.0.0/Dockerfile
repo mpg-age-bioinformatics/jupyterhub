@@ -3,6 +3,88 @@ FROM continuumio/miniconda3:4.8.2
 LABEL maintainer="bioinformatics@age.mpg.de"
 LABEL org.jupyter.service="jupyterhub"
 
+RUN apt-get update \
+ && apt-get install -yq --no-install-recommends \
+	bzip2 \
+	fonts-liberation \
+    locales && \
+    apt-get purge && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+ENV LANG C.UTF-8
+
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpam-sss \
+    libnss-sss \
+    libnss3 \
+    libgsl-dev \
+    gsl-bin \
+    netcdf-bin \
+    libnetcdf-dev \
+    h5utils \
+    hdf-compass \
+    hdf5-helpers \
+    hdf5-tools \
+    libhdf5-java \
+    libhdf5-doc \
+    libhdf5-dev \
+    libhdf5-cpp-103 \
+    libhdf5-jni \
+    libhdf5-mpi-dev \
+    libhdf5-mpich-103 \
+    libhdf5-mpich-dev \
+    libhdf5-openmpi-103 \
+    libhdf5-openmpi-dev \
+#    libjhdf5-java \
+#    libjhdf5-jni \
+    java-common \
+    libasound2 \
+    libcairo-gobject2 \
+    libgtk-3-0 \
+    libxtst6 \
+    libnode-dev \
+    libxml2 \
+    libmagick++-6-headers \
+    libmagick++-dev \
+    imagemagick \
+    libxml2-dev \
+    libcairo2-dev \
+    libsqlite-dev \
+    libmariadbd-dev \
+    libmariadb-dev-compat \
+    libpq-dev \
+    libicu-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libssh-dev \
+    libicu-dev \
+    libbz2-dev \
+    liblzma-dev \
+    autotools-dev \
+    gettext \
+    gettext-base \
+    groff-base \
+    libgdbm6 \
+    libjpeg-dev \
+    libjpeg62-turbo-dev \
+    liblapack-dev \
+    libncurses5-dev \
+    libpcre3-dev \
+    libpng-dev \
+    libreadline-dev \
+    libtinfo-dev \
+    zlib1g-dev \
+    liblapack-dev \
+    libgdal-dev \
+    libgdal20 \
+    libgtk2.0-0 \
+    libgtk2.0-common && \
+  apt-get autoremove -y && \
+  apt-get autoclean -y && \
+  rm -rf /var/lib/apt/lists/*
 
 # Set env for installing miniconda
 ENV CONDA_DIR=/opt/conda \
@@ -46,7 +128,7 @@ RUN apt-get update && apt-get -yq dist-upgrade  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 ; localedef -v -c -i en_US -f UTF-8 en_US.UTF-8; exit 0
+# RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 ; localedef -v -c -i en_US -f UTF-8 en_US.UTF-8; exit 0
 
 # locale-gen en_US.UTF-8 && export LC_ALL=en_US.UTF-8 && 
 
@@ -294,10 +376,9 @@ COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 ## Mods for our environment
 # Change auth.py to allow CammelCase
-# COPY mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
+COPY mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
 # Add further Paths
 # COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
-
 
 # RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
