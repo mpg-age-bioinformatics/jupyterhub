@@ -52,11 +52,11 @@ Packages available in jupyerhub will be directly available when using the image 
 
 Packages installed when using the image on you local computer can be transferred and used in the server with:
 ```
-rsync  -rtvh ${HOME}/jupyter-age/jupyter/* amalia.age.mpg.de:~/.jupyterhub/
+rsync -rtvh ${HOME}/jupyter-age/jupyter/* amalia.age.mpg.de:~/.jupyterhub/
 ```
 
 And vice-versa with 
 ```
-rsync  -rtvh amalia.age.mpg.de:~/.jupyterhub/ ${HOME}/jupyter-age/jupyter/* 
+rsync -rtvh amalia.age.mpg.de:~/.jupyterhub/ ${HOME}/jupyter-age/jupyter/* 
 ```
 
