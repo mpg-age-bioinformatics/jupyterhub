@@ -57,6 +57,6 @@ rsync -rtvh ${HOME}/jupyter-age/jupyter/* amalia.age.mpg.de:~/.jupyterhub/
 
 And vice-versa with 
 ```
-rsync -rtvh amalia.age.mpg.de:~/.jupyterhub/ ${HOME}/jupyter-age/jupyter/* 
+rsync -rtvh amalia.age.mpg.de:~/.jupyterhub/* ${HOME}/jupyter-age/jupyter/
 ```
 
