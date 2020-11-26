@@ -372,13 +372,13 @@ COPY mods/Rprofile.site /opt/conda/envs/r-4.0.3/lib/R/etc/Rprofile.site
 RUN ln -s /opt/conda/envs/r-4.0.3/bin/R /bin/R-4.0.3
 RUN ln -s /opt/conda/envs/r-4.0.3/bin/Rscript /bin/Rscript-4.0.3
 
-COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
-
 ## Mods for our environment
 # Change auth.py to allow CammelCase
 COPY mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
 # Add further Paths
 COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
+# jupyter_notebook_config.py
+COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 # RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
