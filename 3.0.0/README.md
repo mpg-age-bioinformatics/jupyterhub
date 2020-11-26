@@ -60,3 +60,10 @@ And vice-versa with
 rsync -rtvh amalia.age.mpg.de:~/.jupyterhub/* ${HOME}/jupyter-age/jupyter/
 ```
 
+# Contributing
+
+`Renviron` files are created by generating the image with the original `Renviron` and collecting it's content. 
+Additionally, the respective conda env is activated eg. `conda activate r-4.0.3` and the respective env collected into the `Renviron`.
+From this last one a few variables need to be removed eg. `PWD`, `HOSTNAME`. 
+Afterwards, the value of each variable is encapsulated in single quotes. 
+For r versions bellow 3.6.3 every "=" sign between the single quotes is replaced by a space due to the way R used to interpret the file.
