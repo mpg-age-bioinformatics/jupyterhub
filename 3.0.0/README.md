@@ -50,7 +50,7 @@ R
 
 Packages available in jupyerhub will be directly available when using the image through singularity.
 
-Packages installed when using the image on you local computer can be transferred and used in the server with:
+Packages installed when using the image on your local computer can be transferred and used in the server with:
 ```
 rsync -rtvh ${HOME}/jupyter-age/jupyter/* amalia.age.mpg.de:~/.jupyterhub/
 ```
