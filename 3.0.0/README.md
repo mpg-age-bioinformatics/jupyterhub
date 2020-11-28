@@ -42,8 +42,33 @@ python
 
 Using R inside the container (eg. R 4.0.3):
 ```
-conda activate r-4.0.3
-R
+R-4.0.3
+```
+
+or
+
+```
+Rscript-4.0.3
+```
+
+Batch script example for slurm:
+
+```
+#!/bin/bash
+#SBATCH -p <partition> 
+
+module purge && unset PYTHONHOME PYTHONUSERBASE PYTHONPATH
+
+singularity exec /beegfs/common/singularity/jupyter-age.3.0.0.sif /bin/bash << EOS
+#!/bin/bash
+Rscript-4.0.3 -e "
+
+print('This is R')
+
+# your R code here
+
+"
+EOS
 ```
 
 ### Package mobility 
