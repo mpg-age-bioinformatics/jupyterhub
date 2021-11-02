@@ -31,3 +31,5 @@ Push the new tag:
 ```
 git push origin --tags
 ```
+
+The `Dockerfile` used for build will be the `jupyterhub/<TAG>/Dockerfile`. The following tags wil be updated:  `mpgagebioinformatics/jupyter-age:<TAG>` and ` mpgagebioinformatics/jupyter-age:latest`.
