@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+echo ":: Date: $(date '+%d/%m/%Y %H:%M:%S')"
+echo ":: Tag: ${DOCKER_TAG}"
+cd ${DOCKER_TAG}
+docker build -t mpgagebioinformatics/jupyter-age:${DOCKER_TAG} .
+docker push mpgagebioinformatics/jupyter-age:${DOCKER_TAG}

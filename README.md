@@ -15,3 +15,19 @@ All installed Python and R packages will me stored on your hosts `${HOME}/jupyte
 
 Several packages have data installed in `/root/` as this is the path to root's home folder.
 
+### Autobuilds
+
+Add, commit, and push your changes as usual
+
+check last existing repo tag:
+```
+git describe --abbrev=0 --tags
+```
+Make new repo tag:
+```
+git tag -e -a <tag> HEAD
+```
+Push the new tag:
+```
+git push origin --tags
+```
