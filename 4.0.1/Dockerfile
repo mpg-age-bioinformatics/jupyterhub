@@ -52,7 +52,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     imagemagick \
     libxml2-dev \
     libcairo2-dev \
-    libsqlite-dev \
+    libsqlite3-dev \
     libmariadbd-dev \
     libmariadb-dev-compat \
     libpq-dev \
@@ -79,7 +79,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g-dev \
     liblapack-dev \
     libgdal-dev \
-    libgdal20 \
+    libgdal28 \
     libgtk2.0-0 \
     libgtk2.0-common && \
   apt-get autoremove -y && \
@@ -156,7 +156,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     texlive-fonts-extra \
     libc-bin \
     texlive-fonts-recommended \
-    texlive-generic-recommended \
+    texlive-base \
     texlive-latex-base \
     texlive-latex-extra \
     texlive-xetex && \
@@ -296,9 +296,9 @@ COPY mods/Rprofile.site /opt/conda/envs/r-4.0.3/lib/R/etc/Rprofile.site
 RUN ln -s /opt/conda/envs/r-4.0.3/bin/R /bin/R-4.0.3
 RUN ln -s /opt/conda/envs/r-4.0.3/bin/Rscript /bin/Rscript-4.0.3
 
-# Install R 4.2.0 and some base packages
-RUN conda create -c conda-forge -n r-4.2.0 \
-    'r-base=4.2.0' \
+# Install R 4.1.3 and some base packages
+RUN conda create -c conda-forge -n r-4.1.3 \
+    'r-base=4.1.3' \
     'r-caret' \
     'r-crayon' \
     'r-devtools' \
@@ -323,14 +323,22 @@ RUN conda create -c conda-forge -n r-4.2.0 \
     && \
     conda clean --all -f -y
 
-RUN /opt/conda/envs/r-4.2.0/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir420', displayname = 'R 4.2.0')"
+RUN /opt/conda/envs/r-4.1.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir413', displayname = 'R 4.1.3')"
 RUN conda init bash
 
-COPY mods/kernel.json-4.2.0 /usr/local/share/jupyter/kernels/ir420/kernel.json
-COPY mods/Renviron-4.2.0 /opt/conda/envs/r-4.2.0/lib/R/etc/Renviron
-COPY mods/Rprofile.site /opt/conda/envs/r-4.2.0/lib/R/etc/Rprofile.site
-RUN ln -s /opt/conda/envs/r-4.2.0/bin/R /bin/R-4.2.0
-RUN ln -s /opt/conda/envs/r-4.2.0/bin/Rscript /bin/Rscript-4.2.0
+COPY mods/kernel.json-4.1.3 /usr/local/share/jupyter/kernels/ir413/kernel.json
+COPY mods/Renviron-4.1.3 /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron
+COPY mods/Rprofile.site /opt/conda/envs/r-4.1.3/lib/R/etc/Rprofile.site
+RUN ln -s /opt/conda/envs/r-4.1.3/bin/R /bin/R-4.1.3
+RUN ln -s /opt/conda/envs/r-4.1.3/bin/Rscript /bin/Rscript-4.1.3
+
+RUN conda install -c conda-forge -n r-4.0.3 'r-rjava'
+RUN conda install -c conda-forge -n r-4.1.3 'r-rjava'
+
+RUN echo "JAVA_HOME=/opt/conda/envs/r-4.0.3" >>  /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron && \
+    echo "JAVA_LD_LIBRARY_PATH=/opt/conda/envs/r-4.0.3/jre/lib/amd64/server" >>  /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron
+RUN echo "JAVA_HOME=/opt/conda/envs/r-4.1.3" >>  /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron && \
+    echo "JAVA_LD_LIBRARY_PATH=/opt/conda/envs/r-4.1.3/jre/lib/amd64/server" >>  /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron
 
 ## Mods for our environment
 # Change auth.py to allow CammelCase
@@ -339,6 +347,10 @@ COPY mods/auth.py /opt/conda/lib/python3.7/site-packages/jupyterhub/auth.py
 COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.py
 # jupyter_notebook_config.py
 COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+
+RUN mkdir -p /opt/conda/pkgs/ && touch /opt/conda/pkgs/urls.txt
+RUN apt-get update && apt install -yq libgirepository1.0-dev acl && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN conda install -c bioconda bedtools
 
 # RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
