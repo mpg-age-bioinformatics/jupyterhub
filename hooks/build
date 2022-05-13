@@ -2,25 +2,27 @@
 
 set -e
 
-if [ "${DOCKER_TAG}" != "latest" ] ;
+if [ "${DOCKER_TAG}" != "dev" ] ;
 
-then 
+    then 
 
-    echo ":: Date: $(date '+%d/%m/%Y %H:%M:%S')"
-    echo ":: Tag: ${DOCKER_TAG}"
-    cd ${DOCKER_TAG}
-    docker build -t mpgagebioinformatics/jupyter-age:${DOCKER_TAG} .
-    docker tag mpgagebioinformatics/jupyter-age:${DOCKER_TAG} mpgagebioinformatics/jupyter-age:latest
-    docker push mpgagebioinformatics/jupyter-age:${DOCKER_TAG}
-    docker push mpgagebioinformatics/jupyter-age:latest
+        echo ":: Date: $(date '+%d/%m/%Y %H:%M:%S')"
+        echo ":: Tag: ${DOCKER_TAG}"
+        cd ${DOCKER_TAG}
+        docker build -t mpgagebioinformatics/jupyter-age:${DOCKER_TAG} .
+        docker tag mpgagebioinformatics/jupyter-age:${DOCKER_TAG} mpgagebioinformatics/jupyter-age:latest
+        docker push mpgagebioinformatics/jupyter-age:${DOCKER_TAG}
+        docker push mpgagebioinformatics/jupyter-age:latest
 
-else
+elif  [ "${DOCKER_TAG}" == "dev" ] ;
 
-    echo ":: Date: $(date '+%d/%m/%Y %H:%M:%S')"
-    echo ":: Tag: ${DOCKER_TAG}"
-    latest_version=$(ls -d *.*.* | tail -n 1)
-    cd ${latest_version}
-    docker build -t mpgagebioinformatics/jupyter-age:dev .
-    docker push mpgagebioinformatics/jupyter-age:dev
+    then
+
+        echo ":: Date: $(date '+%d/%m/%Y %H:%M:%S')"
+        echo ":: Tag: ${DOCKER_TAG}"
+        latest_version=$(ls -d *.*.* | tail -n 1)
+        cd ${latest_version}
+        docker build -t mpgagebioinformatics/jupyter-age:dev .
+        docker push mpgagebioinformatics/jupyter-age:dev
 
 fi
