@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnss-sss \
     libnss3 \
     libgsl-dev \
-    python2 \
     gsl-bin \
     netcdf-bin \
     libnetcdf-dev \
@@ -106,7 +105,7 @@ RUN conda install --quiet --yes \
     'notebook' \
     'jupyterhub' \
     'jupyterlab' && \
-    conda install -c conda-forge jupytext nodejs==14.15.1 && \
+    conda install -c conda-forge jupytext nodejs && \
     conda clean --all -f -y && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
@@ -224,82 +223,6 @@ EXPOSE 8000
 RUN ln -s /opt/conda/bin/jupyter /usr/local/bin/
 RUN ln -s /opt/conda/bin/pip /usr/local/bin/pip3
 
-
-### Install older iRKernel
-## Install R 3.4.3 and some base packages
-#RUN conda create -n r-3.4.3 \
-#    'r-base=3.4.3' \
-#    'r-caret' \
-#    'r-crayon' \
-#    'r-devtools' \
-#    'r-forecast' \
-#    'r-hexbin' \
-#    'r-htmltools' \
-#    'r-htmlwidgets' \
-#    'r-irkernel' \
-#    'r-nycflights13' \
-#    'r-plyr' \
-#    'r-randomforest' \
-#    'r-rcurl' \
-#    'r-reshape2' \
-#    'r-rmarkdown' \
-#    'r-rodbc' \
-#    'r-rsqlite' \
-#    'r-shiny' \
-#    'r-sparklyr' \
-#    'r-tidyverse' \
-#    'unixodbc' \
-#	'r-e1071' \
-#    && \
-#    conda clean --all -f -y
-#
-#RUN /opt/conda/envs/r-3.4.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir343', displayname = 'R 3.4.3')"
-#RUN conda init bash
-#
-#COPY mods/kernel.json-3.4.3 /usr/local/share/jupyter/kernels/ir343/kernel.json
-#COPY mods/Renviron-3.4.3 /opt/conda/envs/r-3.4.3/lib/R/etc/Renviron
-#COPY mods/Rprofile.site /opt/conda/envs/r-3.4.3/lib/R/etc/Rprofile.site
-#RUN ln -s /opt/conda/envs/r-3.4.3/bin/R /bin/R-3.4.3
-#RUN ln -s /opt/conda/envs/r-3.4.3/bin/Rscript /bin/Rscript-3.4.3
-#
-#
-## Install R 3.5.1 and some base packages
-#RUN conda create -n r-3.5.1 \
-#    'r-base=3.5.1' \
-#    'r-caret' \
-#    'r-crayon' \
-#    'r-devtools' \
-#    'r-forecast' \
-#    'r-hexbin' \
-#    'r-htmltools' \
-#    'r-htmlwidgets' \
-#    'r-irkernel' \
-#    'r-nycflights13' \
-#    'r-plyr' \
-#    'r-randomforest' \
-#    'r-rcurl' \
-#    'r-reshape2' \
-#    'r-rmarkdown' \
-#    'r-rodbc' \
-#    'r-rsqlite' \
-#    'r-shiny' \
-#    'r-sparklyr' \
-#    'r-tidyverse' \
-#    'unixodbc' \
-#	'r-e1071' \
-#    && \
-#    conda clean --all -f -y
-#
-#RUN /opt/conda/envs/r-3.5.1/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir351', displayname = 'R 3.5.1')"
-#RUN conda init bash
-#
-#COPY mods/kernel.json-3.5.1 /usr/local/share/jupyter/kernels/ir351/kernel.json
-#COPY mods/Renviron-3.5.1 /opt/conda/envs/r-3.5.1/lib/R/etc/Renviron
-#COPY mods/Rprofile.site /opt/conda/envs/r-3.5.1/lib/R/etc/Rprofile.site
-#RUN ln -s /opt/conda/envs/r-3.5.1/bin/R /bin/R-3.5.1
-#RUN ln -s /opt/conda/envs/r-3.5.1/bin/Rscript /bin/Rscript-3.5.1
-
-
 # Install R 3.6.3 and some base packages
 RUN conda create -c conda-forge -n r-3.6.3 \
     'r-base=3.6.3' \
@@ -336,9 +259,10 @@ COPY mods/Rprofile.site /opt/conda/envs/r-3.6.3/lib/R/etc/Rprofile.site
 RUN ln -s /opt/conda/envs/r-3.6.3/bin/R /bin/R-3.6.3
 RUN ln -s /opt/conda/envs/r-3.6.3/bin/Rscript /bin/Rscript-3.6.3
 
+
 # Install R 4.0.3 and some base packages
-RUN conda create -c conda-forge -n r-4.2.0 \
-    'r-base=4.2.0' \
+RUN conda create -c conda-forge -n r-4.0.3 \
+    'r-base=4.0.3' \
     'r-caret' \
     'r-crayon' \
     'r-devtools' \
@@ -359,18 +283,62 @@ RUN conda create -c conda-forge -n r-4.2.0 \
     'r-sparklyr' \
     'r-tidyverse' \
     'unixodbc' \
-    'r-e1071' \
+	'r-e1071' \
     && \
     conda clean --all -f -y
 
-RUN /opt/conda/envs/r-4.2.0/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir420', displayname = 'R 4.2.0')"
+RUN /opt/conda/envs/r-4.0.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir403', displayname = 'R 4.0.3')"
 RUN conda init bash
 
-COPY mods/kernel.json-4.2.0 /usr/local/share/jupyter/kernels/ir420/kernel.json
-COPY mods/Renviron-4.2.0 /opt/conda/envs/r-4.2.0/lib/R/etc/Renviron
-COPY mods/Rprofile.site /opt/conda/envs/r-4.2.0/lib/R/etc/Rprofile.site
-RUN ln -s /opt/conda/envs/r-4.2.0/bin/R /bin/R-4.2.0
-RUN ln -s /opt/conda/envs/r-4.2.0/bin/Rscript /bin/Rscript-4.2.0
+COPY mods/kernel.json-4.0.3 /usr/local/share/jupyter/kernels/ir403/kernel.json
+COPY mods/Renviron-4.0.3 /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron
+COPY mods/Rprofile.site /opt/conda/envs/r-4.0.3/lib/R/etc/Rprofile.site
+RUN ln -s /opt/conda/envs/r-4.0.3/bin/R /bin/R-4.0.3
+RUN ln -s /opt/conda/envs/r-4.0.3/bin/Rscript /bin/Rscript-4.0.3
+
+# Install R 4.1.3 and some base packages
+RUN conda create -c conda-forge -n r-4.1.3 \
+    'r-base=4.1.3' \
+    'r-caret' \
+    'r-crayon' \
+    'r-devtools' \
+    'r-forecast' \
+    'r-hexbin' \
+    'r-htmltools' \
+    'r-htmlwidgets' \
+    'r-irkernel' \
+    'r-nycflights13' \
+    'r-plyr' \
+    'r-randomforest' \
+    'r-rcurl' \
+    'r-reshape2' \
+    'r-rmarkdown' \
+    'r-rodbc' \
+    'r-rsqlite' \
+    'r-shiny' \
+    'r-sparklyr' \
+    'r-tidyverse' \
+    'unixodbc' \
+	'r-e1071' \
+    && \
+    conda clean --all -f -y
+
+RUN /opt/conda/envs/r-4.1.3/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir413', displayname = 'R 4.1.3')"
+RUN conda init bash
+
+COPY mods/kernel.json-4.1.3 /usr/local/share/jupyter/kernels/ir413/kernel.json
+COPY mods/Renviron-4.1.3 /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron
+COPY mods/Rprofile.site /opt/conda/envs/r-4.1.3/lib/R/etc/Rprofile.site
+RUN ln -s /opt/conda/envs/r-4.1.3/bin/R /bin/R-4.1.3
+RUN ln -s /opt/conda/envs/r-4.1.3/bin/Rscript /bin/Rscript-4.1.3
+
+RUN conda install -c conda-forge -n r-4.0.3 'r-rjava'
+RUN conda install -c conda-forge -n r-4.1.3 'r-rjava'
+
+RUN echo "JAVA_HOME=/opt/conda/envs/r-4.0.3" >>  /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron && \
+    echo "JAVA_LD_LIBRARY_PATH=/opt/conda/envs/r-4.0.3/jre/lib/amd64/server" >>  /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron
+RUN echo "JAVA_HOME=/opt/conda/envs/r-4.1.3" >>  /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron && \
+    echo "JAVA_LD_LIBRARY_PATH=/opt/conda/envs/r-4.1.3/jre/lib/amd64/server" >>  /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron
 
 ## Mods for our environment
 # Change auth.py to allow CammelCase
@@ -380,10 +348,12 @@ COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.p
 # jupyter_notebook_config.py
 COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
+RUN mkdir -p /opt/conda/pkgs/ && touch /opt/conda/pkgs/urls.txt
+RUN apt-get update && apt install -yq libgirepository1.0-dev acl && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN conda install -c bioconda bedtools
+
 # RUN rm -rf /usr/local/share/jupyter/kernels/ir351
 
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["jupyterhub", "-f /etc/jupyterhub/jupyterhub_config.py"]
-
-
