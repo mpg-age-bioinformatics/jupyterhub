@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.11.0
+FROM continuumio/miniconda3:4.12.0
 
 LABEL maintainer="bioinformatics@age.mpg.de"
 LABEL org.jupyter.service="jupyterhub"
@@ -88,7 +88,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Set env for installing miniconda
 ENV CONDA_DIR=/opt/conda \
-	SHELL=/bin/bash \
+    SHELL=/bin/bash \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
@@ -170,12 +170,14 @@ RUN apt-get update && \
     unixodbc \
     unixodbc-dev \
     r-cran-rodbc \
+    gfortran \
     gcc && \
     rm -rf /var/lib/apt/lists/*
 
 RUN conda install --quiet --yes \
     'beautifulsoup4' \
-    'conda-forge::blas=*=openblas' \
+#    'conda-forge::blas=*=openblas' \
+    'openblas' \
     'cloudpickle' \
     'cython' \
     'dask' \
@@ -192,11 +194,11 @@ RUN conda install --quiet --yes \
     'scikit-image' \
     'scikit-learn' \
     'scipy' \
-    'seaborn' \
+#    'seaborn' \
     'sqlalchemy' \
     'statsmodels' \
     'sympy' \
-    'vincent' \
+#    'vincent' \
     'xlrd' \
     'tensorflow' \
     'openpyxl' \
@@ -246,7 +248,7 @@ RUN conda create -c conda-forge -n r-3.6.3 \
     'r-sparklyr' \
     'r-tidyverse' \
     'unixodbc' \
-	'r-e1071' \
+    'r-e1071' \
     && \
     conda clean --all -f -y
 
@@ -283,7 +285,7 @@ RUN conda create -c conda-forge -n r-4.0.3 \
     'r-sparklyr' \
     'r-tidyverse' \
     'unixodbc' \
-	'r-e1071' \
+    'r-e1071' \
     && \
     conda clean --all -f -y
 
@@ -319,7 +321,7 @@ RUN conda create -c conda-forge -n r-4.1.3 \
     'r-sparklyr' \
     'r-tidyverse' \
     'unixodbc' \
-	'r-e1071' \
+    'r-e1071' \
     && \
     conda clean --all -f -y
 
@@ -328,17 +330,56 @@ RUN conda init bash
 
 COPY mods/kernel.json-4.1.3 /usr/local/share/jupyter/kernels/ir413/kernel.json
 COPY mods/Renviron-4.1.3 /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron
-COPY mods/Rprofile.site /opt/conda/envs/r-4.1.3/lib/R/etc/Rprofile.site
+#COPY mods/Rprofile.site /opt/conda/envs/r-4.1.3/lib/R/etc/Rprofile.site
 RUN ln -s /opt/conda/envs/r-4.1.3/bin/R /bin/R-4.1.3
 RUN ln -s /opt/conda/envs/r-4.1.3/bin/Rscript /bin/Rscript-4.1.3
 
+# Install R 4.2.1 and some base packages
+RUN conda create -c conda-forge -n r-4.2.1 \
+    'r-base=4.2.1' \
+    'r-caret' \
+    'r-crayon' \
+    'r-devtools' \
+    'r-forecast' \
+    'r-hexbin' \
+    'r-htmltools' \
+    'r-htmlwidgets' \
+    'r-irkernel' \
+    'r-nycflights13' \
+    'r-plyr' \
+    'r-randomforest' \
+    'r-rcurl' \
+    'r-reshape2' \
+    'r-rmarkdown' \
+    'r-rodbc' \
+    'r-rsqlite' \
+    'r-shiny' \
+    'r-sparklyr' \
+    'r-tidyverse' \
+    'unixodbc' \
+    'r-e1071' \
+    && \
+    conda clean --all -f -y
+
+RUN /opt/conda/envs/r-4.2.1/bin/Rscript -e "IRkernel::installspec(user = FALSE, name = 'ir421', displayname = 'R 4.2.1')"
+RUN conda init bash
+
+COPY mods/kernel.json-4.2.1 /usr/local/share/jupyter/kernels/ir421/kernel.json
+COPY mods/Renviron-4.2.1 /opt/conda/envs/r-4.2.1/lib/R/etc/Renviron
+#COPY mods/Rprofile.site /opt/conda/envs/r-4.2.1/lib/R/etc/Rprofile.site
+RUN ln -s /opt/conda/envs/r-4.2.1/bin/R /bin/R-4.2.1
+RUN ln -s /opt/conda/envs/r-4.2.1/bin/Rscript /bin/Rscript-4.2.1
+
 RUN conda install -c conda-forge -n r-4.0.3 'r-rjava'
 RUN conda install -c conda-forge -n r-4.1.3 'r-rjava'
+RUN conda install -c conda-forge -n r-4.2.1 'r-rjava'
 
 RUN echo "JAVA_HOME=/opt/conda/envs/r-4.0.3" >>  /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron && \
     echo "JAVA_LD_LIBRARY_PATH=/opt/conda/envs/r-4.0.3/jre/lib/amd64/server" >>  /opt/conda/envs/r-4.0.3/lib/R/etc/Renviron
 RUN echo "JAVA_HOME=/opt/conda/envs/r-4.1.3" >>  /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron && \
     echo "JAVA_LD_LIBRARY_PATH=/opt/conda/envs/r-4.1.3/jre/lib/amd64/server" >>  /opt/conda/envs/r-4.1.3/lib/R/etc/Renviron
+RUN echo "JAVA_HOME=/opt/conda/envs/r-4.2.1" >>  /opt/conda/envs/r-4.2.1/lib/R/etc/Renviron && \
+    echo "JAVA_LD_LIBRARY_PATH=/opt/conda/envs/r-4.2.1/jre/lib/amd64/server" >>  /opt/conda/envs/r-4.2.1/lib/R/etc/Renviron
 
 ## Mods for our environment
 # Change auth.py to allow CammelCase
@@ -357,3 +398,4 @@ RUN conda install -c bioconda bedtools
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["jupyterhub", "-f /etc/jupyterhub/jupyterhub_config.py"]
+
