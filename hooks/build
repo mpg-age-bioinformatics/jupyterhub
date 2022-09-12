@@ -2,7 +2,7 @@
 
 set -e
 
-if [ "${DOCKER_TAG}" != "dev" ] ;
+if [ "${DOCKER_TAG}" != "latest" ] ;
 
     then 
 
@@ -14,7 +14,7 @@ if [ "${DOCKER_TAG}" != "dev" ] ;
         docker push mpgagebioinformatics/jupyter-age:${DOCKER_TAG}
         docker push mpgagebioinformatics/jupyter-age:latest
 
-elif  [ "${DOCKER_TAG}" == "dev" ] ;
+elif  [ "${DOCKER_TAG}" == "latest" ] ;
 
     then
 
