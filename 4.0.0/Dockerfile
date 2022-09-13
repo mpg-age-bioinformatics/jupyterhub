@@ -11,7 +11,13 @@ RUN apt-get update \
     apt-get purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-ENV LANG C.UTF-8
+
+# Set env for installing miniconda
+ENV CONDA_DIR=/opt/conda \
+    SHELL=/bin/bash \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
@@ -86,12 +92,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-get autoclean -y && \
   rm -rf /var/lib/apt/lists/*
 
-# Set env for installing miniconda
-ENV CONDA_DIR=/opt/conda \
-    SHELL=/bin/bash \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8
+RUN apt-get update && \
+    apt-get -yq dist-upgrade && \
+    apt-get install -yq pkg-config \
+    libcairo2-dev \
+    python3 \
+    python3-pip \
+    texlive \
+    texlive-latex-extra \
+    texlive-xetex \
+    texlive-fonts-recommended \
+    texlive-plain-generic \
+    pandoc && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN conda update --all --quiet --yes
 
@@ -104,7 +117,8 @@ RUN conda install --quiet --yes \
     'pycurl' \
     'notebook' \
     'jupyterhub' \
-    'jupyterlab' && \
+    'jupyterlab' \
+    'pyxdg==0.26' && \
     conda install -c conda-forge jupytext nodejs && \
     conda clean --all -f -y && \
     npm cache clean --force && \
@@ -212,6 +226,7 @@ RUN conda install --quiet --yes \
     jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && \
     #jupyter labextension install jupyterlab_bokeh --no-build && \
     jupyter lab build --dev-build=False && \
+    jupyter labextension install jupyterlab-plotly && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging
 

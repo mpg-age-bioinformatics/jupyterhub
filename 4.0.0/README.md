@@ -2,9 +2,9 @@
 
 ### Starting and entering a container on your local computer:
 ```
-docker pull mpgagebioinformatics/jupyter-age:3.0.0
+docker pull mpgagebioinformatics/jupyter-age:4.0.0
 mkdir -p ${HOME}/jupyter-age/jupyter/ ${HOME}/jupyter-age/data/
-docker run -v ${HOME}/jupyter-age/jupyter/:/root/.jupyterhub/ -v ${HOME}/jupyter-age/data/:/srv/jupyterhub/ -p 8081:8081 -it mpgagebioinformatics/jupyter-age:3.0.0 /bin/bash
+docker run -v ${HOME}/jupyter-age/jupyter/:/root/.jupyterhub/ -v ${HOME}/jupyter-age/data/:/srv/jupyterhub/ -p 8081:8081 -it mpgagebioinformatics/jupyter-age:4.0.0 /bin/bash
 ```
 
 Packages will then be kept in `${HOME}/jupyter-age/jupyter/` while data that you work on can be stored in `${HOME}/jupyter-age/data/`.
