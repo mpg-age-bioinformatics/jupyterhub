@@ -405,7 +405,14 @@ COPY mods/spawner.py /opt/conda/lib/python3.7/site-packages/jupyterhub/spawner.p
 COPY mods/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 RUN mkdir -p /opt/conda/pkgs/ && touch /opt/conda/pkgs/urls.txt
-RUN apt-get update && apt install -yq libgirepository1.0-dev acl && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt install -yq \
+    libgirepository1.0-dev \
+    libgeos-c1v5 \
+    libgeos-dev \
+    libudunits2-0 \
+    libudunits2-dev \
+    acl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN conda install -c bioconda bedtools
 
 # RUN rm -rf /usr/local/share/jupyter/kernels/ir351
